@@ -30,10 +30,18 @@ class Script(scripts.Script):
             turbulence = gr.Slider(minimum=0.05, maximum=10.0, step=0.05, label='Turbulence', value=2.75, elem_id=self.elem_id("turbulence"))
             denoising = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='Denoising strength', value=0.9, elem_id=self.elem_id("denoising"))
             noise_mult = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='Noise multiplier', value=1.0, elem_id=self.elem_id("noise_mult"))
+            val_min = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Value Min", elem_id=self.elem_id("val_min"))
+            val_max = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Value Max", elem_id=self.elem_id("val_max"))
+            red_min = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Red Min", elem_id=self.elem_id("red_min"))
+            red_max = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Red Max", elem_id=self.elem_id("red_max"))
+            grn_min = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Green Min", elem_id=self.elem_id("grn_min"))
+            grn_max = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Green Max", elem_id=self.elem_id("grn_max"))
+            blu_min = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Blue Min", elem_id=self.elem_id("blu_min"))
+            blu_max = gr.Slider(minimum=-1, maximum=255, step=1, value=-1, label="Blue Max", elem_id=self.elem_id("blu_max"))
 
-        return [enabled, turbulence, denoising, noise_mult]
+        return [enabled, turbulence, denoising, noise_mult, val_min, val_max, red_min, red_max, grn_min, grn_max, blu_min, blu_max]
 
-    def process(self, p, enabled, turbulence, denoising, noise_mult):
+    def process(self, p, enabled, turbulence, denoising, noise_mult, val_min, val_max, red_min, red_max, grn_min, grn_max, blu_min, blu_max):
         if not enabled:
             return None
             
@@ -64,6 +72,65 @@ class Script(scripts.Script):
             h = w
         else:
             w = h
+
+        # Clamp per channel and globally
+        clamp_v_min = val_min
+        clamp_v_max = val_max
+        clamp_r_min = red_min
+        clamp_r_max = red_max
+        clamp_g_min = grn_min
+        clamp_g_max = grn_max
+        clamp_b_min = blu_min
+        clamp_b_max = blu_max
+
+        # Handle value clamps
+        lv = 0
+        mv = 0
+        if clamp_v_min == -1:
+            lv = 0
+        else:
+            lv = clamp_v_min
+
+        if clamp_v_max == -1:
+            mv = 255
+        else:
+            mv = clamp_v_max
+
+        lr = 0
+        mr = 0
+        if clamp_r_min == -1:
+            lr = lv
+        else:
+            lr = clamp_r_min
+
+        if clamp_r_max == -1:
+            mr = mv
+        else:
+            mr = clamp_r_max
+
+        lg = 0
+        mg = 0
+        if clamp_g_min == -1:
+            lg = lv
+        else:
+            lg = clamp_g_min
+
+        if clamp_g_max == -1:
+            mg = mv
+        else:
+            mg = clamp_g_max
+
+        lb = 0
+        mb = 0
+        if clamp_b_min == -1:
+            lb = lv
+        else:
+            lb = clamp_b_min
+
+        if clamp_b_max == -1:
+            mb = mv
+        else:
+            mb = clamp_b_max
 
         roughness = turbulence
 
@@ -123,7 +190,10 @@ class Script(scripts.Script):
 
         for y in range(ah):
             for x in range(aw):
-                image.putpixel((x, y), (r[x][y], g[x][y], b[x][y]))
+                nr = random.randint(lr, mr)
+                ng = random.randint(lg, mg)
+                nb = random.randint(lb, mb)
+                image.putpixel((x,y), (nr, ng, nb))
 
         p.init_images = [image]
 

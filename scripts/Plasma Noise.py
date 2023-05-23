@@ -57,7 +57,14 @@ class Script(scripts.Script):
         p.extra_generation_params["Alt noise type"] = "Plasma"
         p.extra_generation_params["Turbulence"] = turbulence
         p.extra_generation_params["Alt denoising strength"] = denoising
-        p.extra_generation_params["Alt noise multiplier"] = noise_mult
+        p.extra_generation_params["Value Min"] = val_min
+        p.extra_generation_params["Value Max"] = val_max
+        p.extra_generation_params["Red Min"] = red_min
+        p.extra_generation_params["Red Max"] = red_max
+        p.extra_generation_params["Green Min"] = grn_min
+        p.extra_generation_params["Green Max"] = grn_max
+        p.extra_generation_params["Blue Min"] = blu_min
+        p.extra_generation_params["Blue Max"] = blu_max
         p.initial_noise_multiplier = noise_mult
         p.denoising_strength = denoising
         
